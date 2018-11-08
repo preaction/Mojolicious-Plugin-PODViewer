@@ -29,6 +29,8 @@ our $VERSION = '0.001';
 
 L<Mojolicious::Plugin::PODViewer> is a renderer for true Perl hackers, rawr!
 
+This is a fork of the (deprecated) L<Mojolicious::Plugin::PODRenderer>.
+
 =head1 OPTIONS
 
 L<Mojolicious::Plugin::PODViewer> supports the following options.
