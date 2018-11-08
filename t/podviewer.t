@@ -13,6 +13,7 @@ use Mojolicious::Lite;
 my $route = app->routes->any( '/perldoc' );
 plugin('PODViewer' => {
     default_module => 'MojoliciousTest::Default',
+    allow_modules => [qw( MojoliciousTest )],
     route => $route,
 });
 
@@ -95,6 +96,10 @@ $t->get_ok('/perldoc/MojoliciousTest/PODTest' => {Accept => 'text/plain'})
 
 # Perldoc browser (unsupported format)
 $t->get_ok('/perldoc/MojoliciousTest/PODTest.json')->status_is(204);
+
+# Restrict to only desired set of modules
+$t->get_ok('/perldoc/Mojolicious/Lite')->status_is(302)
+  ->header_like( Location => qr{https://metacpan\.org/pod/Mojolicious::Lite} );
 
 done_testing();
 

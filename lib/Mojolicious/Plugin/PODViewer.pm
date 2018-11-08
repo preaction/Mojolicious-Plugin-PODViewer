@@ -52,6 +52,12 @@ The route to add documentation to. Defaults to C</perldoc>.
 
 The default module to show. Defaults to C<Mojolicious::Guides>.
 
+=head2 allow_modules
+
+An arrayref of regular expressions that match modules to allow. At least
+one of the regular expressions must match. Disallowed modules will be
+redirected to the appropriate page on L<http://metacpan.org>.
+
 =head2 layout
 
 The layout to use. Defaults to C<podviewer>.
@@ -170,6 +176,7 @@ sub register {
   my $defaults = {
       module => $default_module,
       layout => $conf->{layout} // 'podviewer',
+      allow_modules => $conf->{allow_modules} // [ qr{} ],
   };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
@@ -227,6 +234,10 @@ sub _perldoc {
   # Find module or redirect to CPAN
   my $module = join '::', split('/', $c->param('module'));
   $c->stash(cpan => "https://metacpan.org/pod/$module");
+
+  return $c->redirect_to( $c->stash( 'cpan' ) )
+    unless grep { $module =~ /$_/ } @{ $c->stash( 'allow_modules' ) || [] };
+
   my $path
     = Pod::Simple::Search->new->find($module, map { $_, "$_/pods" } @INC);
   return $c->redirect_to($c->stash('cpan')) unless $path && -r $path;
