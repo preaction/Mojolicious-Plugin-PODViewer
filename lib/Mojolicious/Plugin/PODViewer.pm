@@ -46,6 +46,10 @@ Handler name, defaults to C<pod>.
 
 The route to add documentation to. Defaults to C</perldoc>.
 
+=head2 default_module
+
+The default module to show. Defaults to C<Mojolicious::Guides>.
+
 =head2 no_perldoc
 
   # Mojolicious::Lite
@@ -116,7 +120,11 @@ sub register {
 
   # Perldoc browser
   return undef if $conf->{no_perldoc};
-  my $defaults = {module => 'Mojolicious/Guides'};
+
+  my $default_module = $conf->{default_module} // 'Mojolicious::Guides';
+  $default_module =~ s{::}{/}g;
+
+  my $defaults = { module => $default_module };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
       $defaults => [module => qr/[^.]+/] => \&_perldoc,

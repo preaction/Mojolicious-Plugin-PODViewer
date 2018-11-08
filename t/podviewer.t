@@ -12,6 +12,7 @@ use Mojolicious::Lite;
 # POD viewer plugin
 my $route = app->routes->any( '/perldoc' );
 plugin('PODViewer' => {
+    default_module => 'MojoliciousTest::Default',
     route => $route,
 });
 
@@ -56,6 +57,10 @@ $t->get_ok('/art')->status_is(200)->text_like('h2[id="art"]' => qr/art/)
 # Empty
 $t->get_ok('/empty')->status_is(200)->content_is('');
 
+# Default module
+$t->get_ok( '/perldoc' )->status_is( 200 )
+  ->element_exists( 'h1#Default-Page' );
+
 # Headings
 $t->get_ok('/perldoc/MojoliciousTest/PODTest')->status_is(200)
   ->element_exists('h1#One')->element_exists('h2#Two')
@@ -90,10 +95,6 @@ $t->get_ok('/perldoc/MojoliciousTest/PODTest' => {Accept => 'text/plain'})
 
 # Perldoc browser (unsupported format)
 $t->get_ok('/perldoc/MojoliciousTest/PODTest.json')->status_is(204);
-
-# Welcome
-$t->get_ok('/perldoc')->status_is(200)->element_exists('#mojobar')
-  ->text_like('title', qr/The Mojolicious Guide to the Galaxy/);
 
 done_testing();
 
