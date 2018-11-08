@@ -42,6 +42,10 @@ L<Mojolicious::Plugin::PODViewer> supports the following options.
 
 Handler name, defaults to C<pod>.
 
+=head2 route
+
+The route to add documentation to. Defaults to C</perldoc>.
+
 =head2 no_perldoc
 
   # Mojolicious::Lite
@@ -113,8 +117,10 @@ sub register {
   # Perldoc browser
   return undef if $conf->{no_perldoc};
   my $defaults = {module => 'Mojolicious/Guides'};
-  return $app->routes->any(
-    '/perldoc/:module' => $defaults => [module => qr/[^.]+/] => \&_perldoc);
+  my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
+  return $route->any( '/:module' =>
+      $defaults => [module => qr/[^.]+/] => \&_perldoc,
+  );
 }
 
 sub _indentation {

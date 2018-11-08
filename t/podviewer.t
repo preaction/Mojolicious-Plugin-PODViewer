@@ -10,8 +10,10 @@ use lib "$FindBin::Bin/lib";
 use Mojolicious::Lite;
 
 # POD viewer plugin
-plugin('PODViewer')->name('perldoc');
-ok app->routes->find('perldoc'), 'route found';
+my $route = app->routes->any( '/perldoc' );
+plugin('PODViewer' => {
+    route => $route,
+});
 
 # Default layout
 app->defaults(layout => 'gray');
