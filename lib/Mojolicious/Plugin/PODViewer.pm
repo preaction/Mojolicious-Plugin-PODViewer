@@ -27,7 +27,9 @@ our $VERSION = '0.002';
 
 =head1 DESCRIPTION
 
-L<Mojolicious::Plugin::PODViewer> is a renderer for true Perl hackers, rawr!
+L<Mojolicious::Plugin::PODViewer> is a renderer for Perl's POD (Plain
+Old Documentation) format. It includes a browser to browse the Perl
+module documentation as a website.
 
 This is a fork of the (deprecated) L<Mojolicious::Plugin::PODRenderer>.
 
@@ -76,6 +78,36 @@ L<Mojolicious::Plugin::PODViewer> implements the following helpers.
 
 Render POD to HTML without preprocessing.
 
+=head1 TEMPLATES
+
+L<Mojolicious::Plugin::PODViewer> bundles the following template. To
+override this template with your own, create a template with the same name.
+
+=head2 podviewer/perldoc.html.ep
+
+This template displays the POD for a module. The HTML for the documentation
+is in the C<perldoc> content section (C<< <%= content 'perldoc' %> >>).
+The template has the following stash values:
+
+=over
+
+=item module
+
+The current module, with parts separated by C</>.
+
+=item cpan
+
+A link to L<http://metacpan.org> for the current module.
+
+=item topics
+
+An array of arrays of topics in the documentation. Each inner array is
+a set of pairs of C<link text> and C<link href> suitable to be passed
+directly to the C<link_to> helper. New topics are started by a C<=head1>
+tag, and include all lower-level headings.
+
+=back
+
 =head1 METHODS
 
 L<Mojolicious::Plugin::PODViewer> inherits all methods from
@@ -121,6 +153,7 @@ sub register {
   # Perldoc browser
   return undef if $conf->{no_perldoc};
 
+  push @{ $app->renderer->classes }, __PACKAGE__;
   my $default_module = $conf->{default_module} // 'Mojolicious::Guides';
   $default_module =~ s{::}{/}g;
 
@@ -156,12 +189,12 @@ sub _html {
 
   # Rewrite headers
   my $toc = Mojo::URL->new->fragment('toc');
-  my @parts;
+  my @topics;
   for my $e ($dom->find('h1, h2, h3, h4')->each) {
 
-    push @parts, [] if $e->tag eq 'h1' || !@parts;
+    push @topics, [] if $e->tag eq 'h1' || !@topics;
     my $link = Mojo::URL->new->fragment($e->{id});
-    push @{$parts[-1]}, my $text = $e->all_text, $link;
+    push @{$topics[-1]}, my $text = $e->all_text, $link;
     my $permalink = $c->link_to('#' => $link, class => 'permalink');
     $e->content($permalink . $c->link_to($text => $toc));
   }
@@ -172,7 +205,7 @@ sub _html {
 
   # Combine everything to a proper response
   $c->content_for(perldoc => "$dom");
-  $c->render('mojo/perldoc', title => $title, parts => \@parts);
+  $c->render('podviewer/perldoc', title => $title, topics => \@topics);
 }
 
 sub _perldoc {
@@ -203,4 +236,45 @@ sub _pod_to_html {
 }
 
 1;
+__DATA__
 
+@@ podviewer/perldoc.html.ep
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+    </head>
+    <body>
+
+        <div class="crumbs">
+            % my $path;
+            % for my $part (split '/', $module) {
+                %= '::' if $path
+                % $path .= "/$part";
+                %= link_to $part => url_for("/perldoc$path")
+            % }
+            <span class="more">
+                (<%= link_to 'source' => url_for("/perldoc$path.txt") %>,
+                <%= link_to 'CPAN' => $cpan %>)
+            </span>
+        </div>
+
+        <h1><a id="toc">CONTENTS</a></h1>
+        <ul>
+            % for my $topic (@$topics) {
+                <li>
+                    %= link_to splice(@$topic, 0, 2)
+                    % if (@$topic) {
+                        <ul>
+                            % while (@$topic) {
+                                <li><%= link_to splice(@$topic, 0, 2) %></li>
+                            % }
+                        </ul>
+                    % }
+                </li>
+            % }
+        </ul>
+
+        %= content 'perldoc'
+    </body>
+</html>

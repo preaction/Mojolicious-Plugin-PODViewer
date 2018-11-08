@@ -70,11 +70,11 @@ $t->get_ok('/perldoc/MojoliciousTest/PODTest')->status_is(200)
   ->text_like('pre code', qr/\$foo/);
 
 # Trailing slash
-$t->get_ok('/perldoc/MojoliciousTest/PODTest/')->element_exists('#mojobar')
+$t->get_ok('/perldoc/MojoliciousTest/PODTest/')
   ->text_like('title', qr/PODTest/);
 
 # Format
-$t->get_ok('/perldoc/MojoliciousTest/PODTest.html')->element_exists('#mojobar')
+$t->get_ok('/perldoc/MojoliciousTest/PODTest.html')
   ->text_like('title', qr/PODTest/);
 
 # Format (source)
