@@ -52,6 +52,10 @@ The route to add documentation to. Defaults to C</perldoc>.
 
 The default module to show. Defaults to C<Mojolicious::Guides>.
 
+=head2 layout
+
+The layout to use. Defaults to C<podviewer>.
+
 =head2 no_perldoc
 
   # Mojolicious::Lite
@@ -80,7 +84,7 @@ Render POD to HTML without preprocessing.
 
 =head1 TEMPLATES
 
-L<Mojolicious::Plugin::PODViewer> bundles the following template. To
+L<Mojolicious::Plugin::PODViewer> bundles the following templates. To
 override this template with your own, create a template with the same name.
 
 =head2 podviewer/perldoc.html.ep
@@ -107,6 +111,12 @@ directly to the C<link_to> helper. New topics are started by a C<=head1>
 tag, and include all lower-level headings.
 
 =back
+
+=head2 layouts/podviewer.html.ep
+
+The layout for rendering POD pages. Use this to add stylesheets,
+JavaScript, and additional navigation. Set the C<layout> option to
+change this template.
 
 =head1 METHODS
 
@@ -157,7 +167,10 @@ sub register {
   my $default_module = $conf->{default_module} // 'Mojolicious::Guides';
   $default_module =~ s{::}{/}g;
 
-  my $defaults = { module => $default_module };
+  my $defaults = {
+      module => $default_module,
+      layout => $conf->{layout} // 'podviewer',
+  };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
       $defaults => [module => qr/[^.]+/] => \&_perldoc,
@@ -238,43 +251,45 @@ sub _pod_to_html {
 1;
 __DATA__
 
-@@ podviewer/perldoc.html.ep
+@@ layouts/podviewer.html.ep
 <!DOCTYPE html>
 <html>
     <head>
         <title><%= title %></title>
     </head>
     <body>
-
-        <div class="crumbs">
-            % my $path;
-            % for my $part (split '/', $module) {
-                %= '::' if $path
-                % $path .= "/$part";
-                %= link_to $part => url_for("/perldoc$path")
-            % }
-            <span class="more">
-                (<%= link_to 'source' => url_for("/perldoc$path.txt") %>,
-                <%= link_to 'CPAN' => $cpan %>)
-            </span>
-        </div>
-
-        <h1><a id="toc">CONTENTS</a></h1>
-        <ul>
-            % for my $topic (@$topics) {
-                <li>
-                    %= link_to splice(@$topic, 0, 2)
-                    % if (@$topic) {
-                        <ul>
-                            % while (@$topic) {
-                                <li><%= link_to splice(@$topic, 0, 2) %></li>
-                            % }
-                        </ul>
-                    % }
-                </li>
-            % }
-        </ul>
-
-        %= content 'perldoc'
+    %= content
     </body>
 </html>
+
+@@ podviewer/perldoc.html.ep
+<div class="crumbs">
+    % my $path;
+    % for my $part (split '/', $module) {
+        %= '::' if $path
+        % $path .= "/$part";
+        %= link_to $part => url_for("/perldoc$path")
+    % }
+    <span class="more">
+        (<%= link_to 'source' => url_for("/perldoc$path.txt") %>,
+        <%= link_to 'CPAN' => $cpan %>)
+    </span>
+</div>
+
+<h1><a id="toc">CONTENTS</a></h1>
+<ul>
+    % for my $topic (@$topics) {
+        <li>
+            %= link_to splice(@$topic, 0, 2)
+            % if (@$topic) {
+                <ul>
+                    % while (@$topic) {
+                        <li><%= link_to splice(@$topic, 0, 2) %></li>
+                    % }
+                </ul>
+            % }
+        </li>
+    % }
+</ul>
+
+%= content 'perldoc'
