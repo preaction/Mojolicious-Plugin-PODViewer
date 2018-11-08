@@ -32,6 +32,8 @@
       },
       "runtime" : {
          "requires" : {
+            "Mojolicious" : "8",
+            "Pod::Simple" : "3.09",
             "perl" : "5.008"
          }
       },

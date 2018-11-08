@@ -34,6 +34,8 @@ version 0.001
 
 [Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) is a renderer for true Perl hackers, rawr!
 
+This is a fork of the (deprecated) [Mojolicious::Plugin::PODRenderer](https://metacpan.org/pod/Mojolicious::Plugin::PODRenderer).
+
 # OPTIONS
 
 [Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) supports the following options.

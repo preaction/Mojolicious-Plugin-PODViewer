@@ -16,7 +16,10 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "MIN_PERL_VERSION" => "5.008",
   "NAME" => "Mojolicious::Plugin::PODViewer",
-  "PREREQ_PM" => {},
+  "PREREQ_PM" => {
+    "Mojolicious" => 8,
+    "Pod::Simple" => "3.09"
+  },
   "TEST_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
@@ -36,6 +39,8 @@ my %FallbackPrereqs = (
   "File::Spec" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
+  "Mojolicious" => 8,
+  "Pod::Simple" => "3.09",
   "Test::More" => 0
 );
 

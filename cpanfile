@@ -1,3 +1,5 @@
+requires "Mojolicious" => "8";
+requires "Pod::Simple" => "3.09";
 requires "perl" => "5.008";
 
 on 'test' => sub {
