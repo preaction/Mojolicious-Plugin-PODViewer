@@ -1,0 +1,105 @@
+[![Build Status](https://travis-ci.org/preaction/Mojolicious-Plugin-PODViewer.svg?branch=master)](https://travis-ci.org/preaction/Mojolicious-Plugin-PODViewer)
+[![Coverage Status](https://coveralls.io/repos/preaction/Mojolicious-Plugin-PODViewer/badge.svg?branch=master)](https://coveralls.io/r/preaction/Mojolicious-Plugin-PODViewer?branch=master)
+
+# NAME
+
+Mojolicious::Plugin::PODViewer - POD renderer plugin
+
+# VERSION
+
+version 0.001
+
+# SYNOPSIS
+
+    # Mojolicious (with documentation browser under "/perldoc")
+    my $route = $app->plugin('PODViewer');
+    my $route = $app->plugin(PODViewer => {name => 'foo'});
+    my $route = $app->plugin(PODViewer => {preprocess => 'epl'});
+
+    # Mojolicious::Lite (with documentation browser under "/perldoc")
+    my $route = plugin 'PODViewer';
+    my $route = plugin PODViewer => {name => 'foo'};
+    my $route = plugin PODViewer => {preprocess => 'epl'};
+
+    # Without documentation browser
+    plugin PODViewer => {no_perldoc => 1};
+
+    # foo.html.ep
+    %= pod_to_html "=head1 TEST\n\nC<123>"
+
+    # foo.html.pod
+    =head1 <%= uc 'test' %>
+
+# DESCRIPTION
+
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) is a renderer for true Perl hackers, rawr!
+
+# OPTIONS
+
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) supports the following options.
+
+## name
+
+    # Mojolicious::Lite
+    plugin PODViewer => {name => 'foo'};
+
+Handler name, defaults to `pod`.
+
+## no\_perldoc
+
+    # Mojolicious::Lite
+    plugin PODViewer => {no_perldoc => 1};
+
+Disable [Mojolicious::Guides](https://metacpan.org/pod/Mojolicious::Guides) documentation browser that will otherwise be
+available under `/perldoc`.
+
+## preprocess
+
+    # Mojolicious::Lite
+    plugin PODViewer => {preprocess => 'epl'};
+
+Name of handler used to preprocess POD, defaults to `ep`.
+
+# HELPERS
+
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) implements the following helpers.
+
+## pod\_to\_html
+
+    %= pod_to_html '=head2 lalala'
+    <%= pod_to_html begin %>=head2 lalala<% end %>
+
+Render POD to HTML without preprocessing.
+
+# METHODS
+
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) inherits all methods from
+[Mojolicious::Plugin](https://metacpan.org/pod/Mojolicious::Plugin) and implements the following new ones.
+
+## register
+
+    my $route = $plugin->register(Mojolicious->new);
+    my $route = $plugin->register(Mojolicious->new, {name => 'foo'});
+
+Register renderer and helper in [Mojolicious](https://metacpan.org/pod/Mojolicious) application.
+
+# SEE ALSO
+
+[Mojolicious](https://metacpan.org/pod/Mojolicious), [Mojolicious::Guides](https://metacpan.org/pod/Mojolicious::Guides), [https://mojolicious.org](https://mojolicious.org).
+
+# AUTHORS
+
+- Sebastian Riedel <kraih@mojolicious.org>
+- Doug Bell <preaction@cpan.org>
+
+# CONTRIBUTORS
+
+- Oleg <verdrehung@gmail.com>
+- Zoffix Znet <cpan@zoffix.com>
+
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2018 by Sebastian Riedel, Doug Bell.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.

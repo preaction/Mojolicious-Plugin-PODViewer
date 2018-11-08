@@ -1,4 +1,88 @@
-package Mojolicious::Plugin::PODRenderer;
+package Mojolicious::Plugin::PODViewer;
+our $VERSION = '0.001';
+# ABSTRACT: POD renderer plugin
+
+=encoding utf8
+
+=head1 SYNOPSIS
+
+  # Mojolicious (with documentation browser under "/perldoc")
+  my $route = $app->plugin('PODViewer');
+  my $route = $app->plugin(PODViewer => {name => 'foo'});
+  my $route = $app->plugin(PODViewer => {preprocess => 'epl'});
+
+  # Mojolicious::Lite (with documentation browser under "/perldoc")
+  my $route = plugin 'PODViewer';
+  my $route = plugin PODViewer => {name => 'foo'};
+  my $route = plugin PODViewer => {preprocess => 'epl'};
+
+  # Without documentation browser
+  plugin PODViewer => {no_perldoc => 1};
+
+  # foo.html.ep
+  %= pod_to_html "=head1 TEST\n\nC<123>"
+
+  # foo.html.pod
+  =head1 <%= uc 'test' %>
+
+=head1 DESCRIPTION
+
+L<Mojolicious::Plugin::PODViewer> is a renderer for true Perl hackers, rawr!
+
+=head1 OPTIONS
+
+L<Mojolicious::Plugin::PODViewer> supports the following options.
+
+=head2 name
+
+  # Mojolicious::Lite
+  plugin PODViewer => {name => 'foo'};
+
+Handler name, defaults to C<pod>.
+
+=head2 no_perldoc
+
+  # Mojolicious::Lite
+  plugin PODViewer => {no_perldoc => 1};
+
+Disable L<Mojolicious::Guides> documentation browser that will otherwise be
+available under C</perldoc>.
+
+=head2 preprocess
+
+  # Mojolicious::Lite
+  plugin PODViewer => {preprocess => 'epl'};
+
+Name of handler used to preprocess POD, defaults to C<ep>.
+
+=head1 HELPERS
+
+L<Mojolicious::Plugin::PODViewer> implements the following helpers.
+
+=head2 pod_to_html
+
+  %= pod_to_html '=head2 lalala'
+  <%= pod_to_html begin %>=head2 lalala<% end %>
+
+Render POD to HTML without preprocessing.
+
+=head1 METHODS
+
+L<Mojolicious::Plugin::PODViewer> inherits all methods from
+L<Mojolicious::Plugin> and implements the following new ones.
+
+=head2 register
+
+  my $route = $plugin->register(Mojolicious->new);
+  my $route = $plugin->register(Mojolicious->new, {name => 'foo'});
+
+Register renderer and helper in L<Mojolicious> application.
+
+=head1 SEE ALSO
+
+L<Mojolicious>, L<Mojolicious::Guides>, L<https://mojolicious.org>.
+
+=cut
 use Mojo::Base 'Mojolicious::Plugin';
 
 use Mojo::Asset::File;
@@ -104,94 +188,3 @@ sub _pod_to_html {
 
 1;
 
-=encoding utf8
-
-=head1 NAME
-
-Mojolicious::Plugin::PODRenderer - POD renderer plugin
-
-=head1 SYNOPSIS
-
-  # Mojolicious (with documentation browser under "/perldoc")
-  my $route = $app->plugin('PODRenderer');
-  my $route = $app->plugin(PODRenderer => {name => 'foo'});
-  my $route = $app->plugin(PODRenderer => {preprocess => 'epl'});
-
-  # Mojolicious::Lite (with documentation browser under "/perldoc")
-  my $route = plugin 'PODRenderer';
-  my $route = plugin PODRenderer => {name => 'foo'};
-  my $route = plugin PODRenderer => {preprocess => 'epl'};
-
-  # Without documentation browser
-  plugin PODRenderer => {no_perldoc => 1};
-
-  # foo.html.ep
-  %= pod_to_html "=head1 TEST\n\nC<123>"
-
-  # foo.html.pod
-  =head1 <%= uc 'test' %>
-
-=head1 DESCRIPTION
-
-L<Mojolicious::Plugin::PODRenderer> is a renderer for true Perl hackers, rawr!
-
-The code of this plugin is a good example for learning to build new plugins,
-you're welcome to fork it.
-
-See L<Mojolicious::Plugins/"PLUGINS"> for a list of plugins that are available
-by default.
-
-=head1 OPTIONS
-
-L<Mojolicious::Plugin::PODRenderer> supports the following options.
-
-=head2 name
-
-  # Mojolicious::Lite
-  plugin PODRenderer => {name => 'foo'};
-
-Handler name, defaults to C<pod>.
-
-=head2 no_perldoc
-
-  # Mojolicious::Lite
-  plugin PODRenderer => {no_perldoc => 1};
-
-Disable L<Mojolicious::Guides> documentation browser that will otherwise be
-available under C</perldoc>.
-
-=head2 preprocess
-
-  # Mojolicious::Lite
-  plugin PODRenderer => {preprocess => 'epl'};
-
-Name of handler used to preprocess POD, defaults to C<ep>.
-
-=head1 HELPERS
-
-L<Mojolicious::Plugin::PODRenderer> implements the following helpers.
-
-=head2 pod_to_html
-
-  %= pod_to_html '=head2 lalala'
-  <%= pod_to_html begin %>=head2 lalala<% end %>
-
-Render POD to HTML without preprocessing.
-
-=head1 METHODS
-
-L<Mojolicious::Plugin::PODRenderer> inherits all methods from
-L<Mojolicious::Plugin> and implements the following new ones.
-
-=head2 register
-
-  my $route = $plugin->register(Mojolicious->new);
-  my $route = $plugin->register(Mojolicious->new, {name => 'foo'});
-
-Register renderer and helper in L<Mojolicious> application.
-
-=head1 SEE ALSO
-
-L<Mojolicious>, L<Mojolicious::Guides>, L<https://mojolicious.org>.
-
-=cut
