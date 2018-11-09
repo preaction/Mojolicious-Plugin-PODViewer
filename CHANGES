@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-PODViewer
 
 {{ $NEXT }}
 
+0.002     2018-11-08 22:07:11-06:00 America/Chicago
+
     - Added option to change route to load POD under. Previously, it
       would only be available under `/perldoc`.
     - Added option to change the default module. Previously, it would
