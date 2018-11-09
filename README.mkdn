@@ -7,7 +7,7 @@ Mojolicious::Plugin::PODViewer - POD renderer plugin
 
 # VERSION
 
-version 0.001
+version 0.002
 
 # SYNOPSIS
 
@@ -32,7 +32,9 @@ version 0.001
 
 # DESCRIPTION
 
-[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) is a renderer for true Perl hackers, rawr!
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) is a renderer for Perl's POD (Plain
+Old Documentation) format. It includes a browser to browse the Perl
+module documentation as a website.
 
 This is a fork of the (deprecated) [Mojolicious::Plugin::PODRenderer](https://metacpan.org/pod/Mojolicious::Plugin::PODRenderer).
 
@@ -46,6 +48,24 @@ This is a fork of the (deprecated) [Mojolicious::Plugin::PODRenderer](https://me
     plugin PODViewer => {name => 'foo'};
 
 Handler name, defaults to `pod`.
+
+## route
+
+The route to add documentation to. Defaults to `/perldoc`.
+
+## default\_module
+
+The default module to show. Defaults to `Mojolicious::Guides`.
+
+## allow\_modules
+
+An arrayref of regular expressions that match modules to allow. At least
+one of the regular expressions must match. Disallowed modules will be
+redirected to the appropriate page on [http://metacpan.org](http://metacpan.org).
+
+## layout
+
+The layout to use. Defaults to `podviewer`.
 
 ## no\_perldoc
 
@@ -72,6 +92,38 @@ Name of handler used to preprocess POD, defaults to `ep`.
     <%= pod_to_html begin %>=head2 lalala<% end %>
 
 Render POD to HTML without preprocessing.
+
+# TEMPLATES
+
+[Mojolicious::Plugin::PODViewer](https://metacpan.org/pod/Mojolicious::Plugin::PODViewer) bundles the following templates. To
+override this template with your own, create a template with the same name.
+
+## podviewer/perldoc.html.ep
+
+This template displays the POD for a module. The HTML for the documentation
+is in the `perldoc` content section (`<%= content 'perldoc' %>`).
+The template has the following stash values:
+
+- module
+
+    The current module, with parts separated by `/`.
+
+- cpan
+
+    A link to [http://metacpan.org](http://metacpan.org) for the current module.
+
+- topics
+
+    An array of arrays of topics in the documentation. Each inner array is
+    a set of pairs of `link text` and `link href` suitable to be passed
+    directly to the `link_to` helper. New topics are started by a `=head1`
+    tag, and include all lower-level headings.
+
+## layouts/podviewer.html.ep
+
+The layout for rendering POD pages. Use this to add stylesheets,
+JavaScript, and additional navigation. Set the `layout` option to
+change this template.
 
 # METHODS
 
