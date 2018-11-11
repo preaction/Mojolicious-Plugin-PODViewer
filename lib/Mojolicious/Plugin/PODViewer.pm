@@ -194,6 +194,8 @@ sub _html {
   # Rewrite links
   my $dom     = Mojo::DOM->new(_pod_to_html($src));
   my $perldoc = $c->url_for('/perldoc/');
+  # TODO: Only rewrite links that match allow_modules. That will prevent
+  # 302 redirects and make a better user experience
   $_->{href} =~ s!^https://metacpan\.org/pod/!$perldoc!
     and $_->{href} =~ s!::!/!gi
     for $dom->find('a[href]')->map('attr')->each;
