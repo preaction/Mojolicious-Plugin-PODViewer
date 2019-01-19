@@ -196,13 +196,17 @@ sub _html {
   my ($c, $src) = @_;
 
   # Rewrite links
-  my $dom     = Mojo::DOM->new(_pod_to_html($src));
-  my $perldoc = $c->url_for('/perldoc/');
-  # TODO: Only rewrite links that match allow_modules. That will prevent
-  # 302 redirects and make a better user experience
-  $_->{href} =~ s!^https://metacpan\.org/pod/!$perldoc!
-    and $_->{href} =~ s!::!/!gi
-    for $dom->find('a[href]')->map('attr')->each;
+  my $dom  = Mojo::DOM->new(_pod_to_html($src));
+  my $base = 'https://metacpan.org/pod/';
+  $dom->find('a[href]')->map('attr')->each(sub {
+    if ($_->{href} =~ m!^\Q$base\E([:\w]+)!) {
+      my $module = $1;
+      return undef
+        unless grep { $module =~ /$_/ } @{ $c->stash('allow_modules') || [] };
+      $_->{href} =~ s{^\Q$base$module\E}{$c->url_for(module => $module)}e;
+      $_->{href} =~ s!::!/!gi
+    }
+  });
 
   # Rewrite code blocks for syntax highlighting and correct indentation
   for my $e ($dom->find('pre > code')->each) {
@@ -285,10 +289,11 @@ __DATA__
     % for my $part (split '/', $module) {
         %= '::' if $path
         % $path .= "/$part";
-        %= link_to $part => url_for("/perldoc$path")
+        %= link_to $part => url_for(stash("route_name"), module => $module)
     % }
     <span class="more">
-        (<%= link_to 'source' => url_for("/perldoc$path.txt") %>,
+        (<%= link_to 'source' => url_for(stash("route_name"),
+          module => $module, format => 'txt') %>,
         <%= link_to 'CPAN' => $cpan %>)
     </span>
 </div>
