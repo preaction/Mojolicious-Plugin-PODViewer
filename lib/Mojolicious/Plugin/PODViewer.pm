@@ -175,17 +175,19 @@ sub register {
 
   push @{ $app->renderer->classes }, __PACKAGE__;
   my $default_module = $conf->{default_module} // 'Mojolicious::Guides';
+  my $route_name = $conf->{route_name} // 'perldoc';
   $default_module =~ s{::}{/}g;
 
   my $defaults = {
       module => $default_module,
       layout => $conf->{layout} // 'podviewer',
       allow_modules => $conf->{allow_modules} // [ qr{} ],
+      route_name => $route_name,
   };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
       $defaults => [module => qr/[^.]+/] => \&_perldoc,
-  )->name($conf->{route_name} || 'perldoc');
+  )->name($route_name);
 }
 
 sub _indentation {
