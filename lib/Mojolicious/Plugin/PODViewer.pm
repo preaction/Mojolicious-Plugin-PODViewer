@@ -48,6 +48,10 @@ Handler name, defaults to C<pod>.
 
 The route to add documentation to. Defaults to C</perldoc>.
 
+=head2 route_name
+
+The name of the newly created documentation route. Defaults to C<perldoc>.
+
 =head2 default_module
 
 The default module to show. Defaults to C<Mojolicious::Guides>.
@@ -181,7 +185,7 @@ sub register {
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
       $defaults => [module => qr/[^.]+/] => \&_perldoc,
-  );
+  )->name($conf->{route_name} || 'perldoc');
 }
 
 sub _indentation {
