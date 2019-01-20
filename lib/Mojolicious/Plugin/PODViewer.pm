@@ -46,7 +46,9 @@ Handler name, defaults to C<pod>.
 
 =head2 route
 
-The route to add documentation to. Defaults to C</perldoc>.
+The L<route|Mojolicious::Routes::Route> to add documentation to. Defaults to
+C<< $app->routes->any('/perldoc') >>. The new route will have a C</:module>
+placeholder added, and a name of C<plugin.perldoc>.
 
 =head2 default_module
 
