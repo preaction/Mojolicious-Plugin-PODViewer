@@ -48,10 +48,6 @@ Handler name, defaults to C<pod>.
 
 The route to add documentation to. Defaults to C</perldoc>.
 
-=head2 route_name
-
-The name of the newly created documentation route. Defaults to C<perldoc>.
-
 =head2 default_module
 
 The default module to show. Defaults to C<Mojolicious::Guides>.
@@ -175,19 +171,17 @@ sub register {
 
   push @{ $app->renderer->classes }, __PACKAGE__;
   my $default_module = $conf->{default_module} // 'Mojolicious::Guides';
-  my $route_name = $conf->{route_name} // 'perldoc';
   $default_module =~ s{::}{/}g;
 
   my $defaults = {
       module => $default_module,
       layout => $conf->{layout} // 'podviewer',
       allow_modules => $conf->{allow_modules} // [ qr{} ],
-      route_name => $route_name,
   };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
   return $route->any( '/:module' =>
       $defaults => [module => qr/[^.]+/] => \&_perldoc,
-  )->name($route_name);
+  )->name('plugin.podviewer');
 }
 
 sub _indentation {
@@ -291,10 +285,10 @@ __DATA__
     % for my $part (split '/', $module) {
         %= '::' if $path
         % $path .= "/$part";
-        %= link_to $part => url_for(stash("route_name"), module => $module)
+        %= link_to $part => url_for('plugin.podviewer', module => $module)
     % }
     <span class="more">
-        (<%= link_to 'source' => url_for(stash("route_name"),
+        (<%= link_to 'source' => url_for('plugin.podviewer',
           module => $module, format => 'txt') %>,
         <%= link_to 'CPAN' => $cpan %>)
     </span>
