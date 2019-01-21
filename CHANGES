@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-PODViewer
 
 {{ $NEXT }}
 
+0.003     2019-01-21 12:38:10-06:00 America/Chicago
+
     [Fixed]
 
     - Fixed routing when the plugin was not directly at the root. Thanks
