@@ -7,7 +7,7 @@ Mojolicious::Plugin::PODViewer - POD renderer plugin
 
 # VERSION
 
-version 0.002
+version 0.003
 
 # SYNOPSIS
 
@@ -51,7 +51,9 @@ Handler name, defaults to `pod`.
 
 ## route
 
-The route to add documentation to. Defaults to `/perldoc`.
+The [route](https://metacpan.org/pod/Mojolicious::Routes::Route) to add documentation to. Defaults to
+`$app->routes->any('/perldoc')`. The new route will have a name of
+`plugin.podviewer`.
 
 ## default\_module
 
@@ -148,6 +150,7 @@ Register renderer and helper in [Mojolicious](https://metacpan.org/pod/Mojolicio
 
 # CONTRIBUTORS
 
+- brad <brad@clickmagick.com>
 - Oleg <verdrehung@gmail.com>
 - Zoffix Znet <cpan@zoffix.com>
 
