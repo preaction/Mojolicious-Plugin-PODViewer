@@ -177,7 +177,7 @@ sub register {
 
   my $defaults = {
       module => $default_module,
-      layout => $conf->{layout} // 'podviewer',
+      ( $conf->{layout} ? ( layout => $conf->{layout} ) : () ),
       allow_modules => $conf->{allow_modules} // [ qr{} ],
   };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
@@ -250,6 +250,7 @@ sub _perldoc {
     = Pod::Simple::Search->new->find($module, map { $_, "$_/pods" } @INC);
   return $c->redirect_to($c->stash('cpan')) unless $path && -r $path;
 
+  $c->stash->{layout} //= 'podviewer';
   my $src = path($path)->slurp;
   $c->respond_to(txt => {data => $src}, html => sub { _html($c, $src) });
 }
