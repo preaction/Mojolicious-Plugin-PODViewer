@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-PODViewer
 
 {{ $NEXT }}
 
+0.004     2019-01-24 15:20:44-06:00 America/Chicago
+
     [Fixed]
 
     - Fixed default layout to allow app default to win over the skeleton
