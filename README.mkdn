@@ -7,7 +7,7 @@ Mojolicious::Plugin::PODViewer - POD renderer plugin
 
 # VERSION
 
-version 0.003
+version 0.004
 
 # SYNOPSIS
 
