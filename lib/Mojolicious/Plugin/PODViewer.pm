@@ -25,13 +25,16 @@ our $VERSION = '0.005';
   # foo.html.pod
   =head1 <%= uc 'test' %>
 
+  # ojo one-liner (documentation browser for the code in folder "lib")
+  perl -Ilib -Mojo -E'plugin "PODViewer"; a->start' daemon
+
 =head1 DESCRIPTION
 
 L<Mojolicious::Plugin::PODViewer> is a renderer for Perl's POD (Plain
 Old Documentation) format. It includes a browser to browse the Perl
 module documentation as a website.
 
-This is a fork of the (deprecated) L<Mojolicious::Plugin::PODRenderer>.
+This is a fork of the former Mojolicious::Plugin::PODRenderer.
 
 =head1 OPTIONS
 
