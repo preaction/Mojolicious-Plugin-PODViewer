@@ -236,7 +236,7 @@ sub _html {
     push @topics, [] if $e->tag eq 'h1' || !@topics;
     my $link = Mojo::URL->new->fragment($e->{id});
     push @{$topics[-1]}, my $text = $e->all_text, $link;
-    my $permalink = $c->tag('small', class => 'text-muted', $c->link_to(chr(0x221e) => $link));
+    my $permalink = $c->tag('small', class => 'text-muted d-print-none', $c->link_to(chr(0x221e) => $link));
     $e->content( $c->link_to($text => $toc) . ' ' . $permalink);
   }
 
@@ -336,8 +336,8 @@ __DATA__
 
 <div class="container">
   <h3 class="mt-3 mb-3"><%= $perlmodule %></h3>
-  <h1><a id="toc">Contents</a> <a class="btn btn-light btn-sm" data-toggle="collapse" data-target="#topics">hide/show</a></h1>
-  <ul class="collapse show list-unstyled" id="topics">
+  <h1 class="d-print-none"><a id="toc">Contents</a> <a class="btn btn-light btn-sm" data-toggle="collapse" data-target="#topics">hide/show</a></h1>
+  <ul class="collapse show list-unstyled d-print-none" id="topics">
     % for my $topic (@$topics) {
       <li>
         %= link_to splice(@$topic, 0, 2)
