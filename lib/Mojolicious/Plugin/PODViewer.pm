@@ -103,13 +103,17 @@ The template has the following stash values:
 
 =over
 
+=item cpan
+
+A link to L<http://metacpan.org> for the current module.
+
 =item module
 
 The current module, with parts separated by C</>.
 
-=item cpan
+=item perlmodule
 
-A link to L<http://metacpan.org> for the current module.
+The current module, with parts separated by C<::>.
 
 =item topics
 
@@ -208,10 +212,16 @@ sub _html {
 
   # Rewrite code blocks for syntax highlighting and correct indentation
   for my $e ($dom->find('pre > code')->each) {
+    my $attrs = $e->parent->attr;
+    my $class = $attrs->{class};
+    my $parent_class = 'codesample rounded';
+    $attrs->{class} = defined $class ? "$class $parent_class" : $parent_class;
+
     next if (my $str = $e->content) =~ /^\s*(?:\$|Usage:)\s+/m;
     next unless $str =~ /[\$\@\%]\w|-&gt;\w|^use\s+\w/m;
-    my $attrs = $e->attr;
-    my $class = $attrs->{class};
+
+    $attrs = $e->attr;
+    $class = $attrs->{class};
     $attrs->{class} = defined $class ? "$class prettyprint" : 'prettyprint';
   }
 
@@ -223,8 +233,8 @@ sub _html {
     push @topics, [] if $e->tag eq 'h1' || !@topics;
     my $link = Mojo::URL->new->fragment($e->{id});
     push @{$topics[-1]}, my $text = $e->all_text, $link;
-    my $permalink = $c->link_to('#' => $link, class => 'permalink');
-    $e->content($permalink . $c->link_to($text => $toc));
+    my $permalink = $c->tag('small', class => 'text-muted', $c->link_to(chr(0x221e) => $link));
+    $e->content( $c->link_to($text => $toc) . ' ' . $permalink);
   }
 
   # Try to find a title
@@ -242,6 +252,7 @@ sub _perldoc {
   # Find module or redirect to CPAN
   my $module = join '::', split('/', $c->param('module'));
   $c->stash(cpan => "https://metacpan.org/pod/$module");
+  $c->stash(perlmodule => $module);
 
   return $c->redirect_to( $c->stash( 'cpan' ) )
     unless grep { $module =~ /$_/ } @{ $c->stash( 'allow_modules' ) || [] };
@@ -274,43 +285,69 @@ __DATA__
 @@ layouts/podviewer.html.ep
 <!DOCTYPE html>
 <html>
-    <head>
-        <title><%= title %></title>
-    </head>
-    <body>
-    %= content
-    </body>
+  <head>
+    <title><%= title %></title>
+    %= tag 'meta', charset => 'UTF-8'
+    %= tag 'meta', name => 'viewport', content => 'width=device-width, initial-scale=1, shrink-to-fit=no'
+    <%= stylesheet 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
+        integrity => 'sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS',
+        crossorigin =>'anonymous' %>
+    %= stylesheet begin
+      .codesample {
+        background-color: #f8f9fa;
+        padding: 1em;
+      }
+    % end
+  </head>
+  <body>
+  %= content
+  %= javascript '/mojo/jquery/jquery.js'
+  <%= javascript 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js',
+      integrity => 'sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k',
+      crossorigin => 'anonymous' %>
+  %= javascript '/mojo/prettify/run_prettify.js'
+  </body>
 </html>
 
 @@ podviewer/perldoc.html.ep
-<div class="crumbs">
-    % my $path;
-    % for my $part (split '/', $module) {
-        %= '::' if $path
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Perldoc</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <div class="navbar-nav mr-auto">
+      % my $path;
+      % for my $part (split '/', $module) {
+        %= tag 'span', class => 'navbar-text', '::' if $path
         % $path .= "/$part";
-        %= link_to $part => 'plugin.podviewer', { module => $module }
-    % }
-    <span class="more">
-        (<%= link_to 'source' => 'plugin.podviewer',
-          { module => $module, format => 'txt' } %>,
-        <%= link_to 'CPAN' => 'plugin.podviewer', { module => $module } %>)
-    </span>
-</div>
+        %= link_to $part => "/perldoc$path", class => 'nav-link'
+      % }
+    </div>
+    <div class="navbar-nav">
+      %= link_to source => '', {format => 'txt'}, class => 'nav-link'
+      %= link_to CPAN => $cpan, class => 'nav-link'
+    </div>
+  </div>
+</nav>
 
-<h1><a id="toc">CONTENTS</a></h1>
-<ul>
+<div class="container">
+  <h3 class="mt-3 mb-3"><%= $perlmodule %></h3>
+  <h1><a id="toc">Contents</a> <a class="btn btn-light btn-sm" data-toggle="collapse" data-target="#topics">hide/show</a></h1>
+  <ul class="collapse show list-unstyled" id="topics">
     % for my $topic (@$topics) {
-        <li>
-            %= link_to splice(@$topic, 0, 2)
-            % if (@$topic) {
-                <ul>
-                    % while (@$topic) {
-                        <li><%= link_to splice(@$topic, 0, 2) %></li>
-                    % }
-                </ul>
+      <li>
+        %= link_to splice(@$topic, 0, 2)
+        % if (@$topic) {
+          <ul>
+            % while (@$topic) {
+              <li><%= link_to splice(@$topic, 0, 2) %></li>
             % }
-        </li>
+          </ul>
+        % }
+      </li>
     % }
-</ul>
+  </ul>
 
-%= content 'perldoc'
+  %= content 'perldoc'
+</div>
