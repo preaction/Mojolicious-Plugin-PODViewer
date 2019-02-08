@@ -236,8 +236,8 @@ sub _html {
     push @topics, [] if $e->tag eq 'h1' || !@topics;
     my $link = Mojo::URL->new->fragment($e->{id});
     push @{$topics[-1]}, my $text = $e->all_text, $link;
-    my $permalink = $c->tag('small', class => 'text-muted d-print-none', $c->link_to(chr(0x221e) => $link));
-    $e->content( $c->link_to($text => $toc) . ' ' . $permalink);
+    my $permalink = $c->link_to('#' => $link, class => 'permalink');
+    $e->content($c->link_to($text => $toc) . ' ' . $permalink);
   }
 
   # Try to find a title
@@ -290,7 +290,6 @@ __DATA__
 <html>
   <head>
     <title><%= title %></title>
-    %= tag 'meta', charset => 'UTF-8'
     %= tag 'meta', name => 'viewport', content => 'width=device-width, initial-scale=1, shrink-to-fit=no'
     <%= stylesheet 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css',
         integrity => 'sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS',
@@ -300,57 +299,55 @@ __DATA__
         background-color: #f8f9fa;
         padding: 1em;
       }
+      .more {
+        font-size: 0.5em;
+        font-weight: 50;
+      }
+      .permalink {
+        font-size: 50%;
+      }
     % end
+
   </head>
   <body>
-  %= content
-  %= javascript '/mojo/jquery/jquery.js'
-  <%= javascript 'https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js',
-      integrity => 'sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k',
-      crossorigin => 'anonymous' %>
-  %= javascript '/mojo/prettify/run_prettify.js'
+    <nav class="navbar navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">PODViewer</a>
+    </nav>
+
+    <div class="container">
+    %= content
+    </div>
+    %= javascript '/mojo/prettify/run_prettify.js'
   </body>
 </html>
 
 @@ podviewer/perldoc.html.ep
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Perldoc</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarText">
-    <div class="navbar-nav mr-auto">
-      % my $path;
-      % for my $part (split '/', $module) {
-        %= tag 'span', class => 'navbar-text', '::' if $path
-        % $path .= "/$part";
-        %= link_to $part => "/perldoc$path", class => 'nav-link'
-      % }
-    </div>
-    <div class="navbar-nav">
-      %= link_to source => '', {format => 'txt'}, class => 'nav-link'
-      %= link_to CPAN => $cpan, class => 'nav-link'
-    </div>
-  </div>
-</nav>
-
-<div class="container">
-  <h3 class="mt-3 mb-3"><%= $perlmodule %></h3>
-  <h1 class="d-print-none"><a id="toc">Contents</a> <a class="btn btn-light btn-sm" data-toggle="collapse" data-target="#topics">hide/show</a></h1>
-  <ul class="collapse show list-unstyled d-print-none" id="topics">
-    % for my $topic (@$topics) {
-      <li>
-        %= link_to splice(@$topic, 0, 2)
-        % if (@$topic) {
-          <ul>
-            % while (@$topic) {
-              <li><%= link_to splice(@$topic, 0, 2) %></li>
-            % }
-          </ul>
+<h1 class="crumbs mt-3 mb-3">
+  % my $path;
+  % for my $part (split '/', $module) {
+    %= '::' if $path
+    % $path .= "/$part";
+    %= link_to $part => "/perldoc$path"
+  % }
+  <span class="more d-print-none">
+    (<%= link_to 'source' => '', { format => 'txt' } %>,
+    <%= link_to 'CPAN' => $cpan %>)
+  </span>
+</h1>
+<h2 class="d-print-none"><a id="toc">Contents</a></h2>
+<ul class="list-unstyled d-print-none">
+% for my $topic (@$topics) {
+  <li>
+    %= link_to splice(@$topic, 0, 2)
+    % if (@$topic) {
+      <ul>
+        % while (@$topic) {
+          <li><%= link_to splice(@$topic, 0, 2) %></li>
         % }
-      </li>
+      </ul>
     % }
-  </ul>
+  </li>
+% }
+</ul>
 
-  %= content 'perldoc'
-</div>
+%= content 'perldoc'
