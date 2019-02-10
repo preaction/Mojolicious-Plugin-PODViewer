@@ -323,16 +323,17 @@ __DATA__
 
 @@ podviewer/perldoc.html.ep
 <h1 class="crumbs mt-3 mb-3">
-  % my $path;
-  % for my $part (split '/', $module) {
-    %= '::' if $path
-    % $path .= "/$part";
-    %= link_to $part => "/perldoc$path"
-  % }
-  <span class="more d-print-none">
-    (<%= link_to 'source' => '', { format => 'txt' } %>,
-    <%= link_to 'CPAN' => $cpan %>)
-  </span>
+    % my $path;
+    % for my $part (split '/', $module) {
+        %= '::' if $path
+        % $path .= "/$part";
+        %= link_to $part => 'plugin.podviewer', { module => $module }
+    % }
+    <span class="more">
+        (<%= link_to 'source' => 'plugin.podviewer',
+          { module => $module, format => 'txt' } %>,
+        <%= link_to 'CPAN' => 'plugin.podviewer', { module => $module } %>)
+    </span>
 </h1>
 <h2 class="d-print-none"><a id="toc">Contents</a></h2>
 <ul class="list-unstyled d-print-none">
