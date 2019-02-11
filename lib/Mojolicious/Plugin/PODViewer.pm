@@ -229,7 +229,7 @@ sub _html {
 
   # Try to find a title
   my $title = 'Perldoc';
-  $dom->find('h1 + p')->first(sub { $title = shift->text });
+  $dom->find('h1 + p')->first(sub { $title = shift->all_text });
 
   # Combine everything to a proper response
   $c->content_for(perldoc => "$dom");
