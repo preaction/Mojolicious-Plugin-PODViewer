@@ -10,14 +10,12 @@ use lib "$FindBin::Bin/lib";
 use Mojolicious::Lite;
 
 # POD viewer plugin
-my $route = app->routes->any('/perldoc');
-plugin(
-  'PODViewer' => {
+my $route = app->routes->any( '/perldoc' );
+plugin('PODViewer' => {
     default_module => 'MojoliciousTest::Default',
-    allow_modules  => [qw( MojoliciousTest )],
-    route          => $route,
-  }
-);
+    allow_modules => [qw( MojoliciousTest )],
+    route => $route,
+});
 
 # Default layout
 app->defaults(layout => 'gray');
@@ -61,7 +59,8 @@ $t->get_ok('/art')->status_is(200)->text_like('h2[id="art"]' => qr/art/)
 $t->get_ok('/empty')->status_is(200)->content_is('');
 
 # Default module
-$t->get_ok('/perldoc')->status_is(200)->element_exists('h1#Default-Page');
+$t->get_ok( '/perldoc' )->status_is( 200 )
+  ->element_exists( 'h1#Default-Page' );
 
 # Headings
 $t->get_ok('/perldoc/MojoliciousTest/PODTest')->status_is(200)
@@ -112,7 +111,7 @@ $t->get_ok('/perldoc/MojoliciousTest/PODTest.json')->status_is(204);
 
 # Restrict to only desired set of modules
 $t->get_ok('/perldoc/Mojolicious/Lite')->status_is(302)
-  ->header_like(Location => qr{https://metacpan\.org/pod/Mojolicious::Lite});
+  ->header_like( Location => qr{https://metacpan\.org/pod/Mojolicious::Lite} );
 
 done_testing();
 
