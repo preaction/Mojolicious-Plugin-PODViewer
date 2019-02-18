@@ -300,11 +300,14 @@ __DATA__
         padding: 1em;
       }
       .more {
-        font-size: 0.5em;
+        font-size: 0.8em;
         font-weight: 50;
       }
       .permalink {
         font-size: 50%;
+      }
+      ul.contents {
+        list-style-type: none;
       }
     % end
 
@@ -322,7 +325,7 @@ __DATA__
 </html>
 
 @@ podviewer/perldoc.html.ep
-<h1 class="crumbs mt-3 mb-3">
+<div class="crumbs mt-3 mb-3">
     % my $path;
     % for my $part (split '/', $module) {
         %= '::' if $path
@@ -334,14 +337,14 @@ __DATA__
           { module => $module, format => 'txt' } %>,
         <%= link_to 'CPAN' => 'plugin.podviewer', { module => $module } %>)
     </span>
-</h1>
+</div>
 <h2 class="d-print-none"><a id="toc">Contents</a></h2>
-<ul class="list-unstyled d-print-none">
+<ul class="contents d-print-none">
 % for my $topic (@$topics) {
   <li>
     %= link_to splice(@$topic, 0, 2)
     % if (@$topic) {
-      <ul>
+      <ul class="contents">
         % while (@$topic) {
           <li><%= link_to splice(@$topic, 0, 2) %></li>
         % }
