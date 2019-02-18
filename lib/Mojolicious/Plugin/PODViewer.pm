@@ -288,12 +288,11 @@ __DATA__
     % for my $part (split '/', $module) {
         %= '::' if $path
         % $path .= "/$part";
-        %= link_to $part => 'plugin.podviewer', { module => $module }
+        %= link_to $part => "/perldoc$path"
     % }
     <span class="more">
-        (<%= link_to 'source' => 'plugin.podviewer',
-          { module => $module, format => 'txt' } %>,
-        <%= link_to 'CPAN' => 'plugin.podviewer', { module => $module } %>)
+        (<%= link_to 'source' => '', { format => 'txt' } %>,
+        <%= link_to 'CPAN' => $cpan %>)
     </span>
 </div>
 
