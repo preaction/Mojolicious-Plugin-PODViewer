@@ -287,8 +287,8 @@ __DATA__
     % my $path;
     % for my $part (split '/', $module) {
         %= '::' if $path
-        % $path .= "/$part";
-        %= link_to $part => 'plugin.podviewer', { module => $module }
+        % $path .= $path ? "/$part" : $path;
+        %= link_to $part => 'plugin.podviewer', { module => $part }
     % }
     <span class="more">
         (<%= link_to 'source' => 'plugin.podviewer',
