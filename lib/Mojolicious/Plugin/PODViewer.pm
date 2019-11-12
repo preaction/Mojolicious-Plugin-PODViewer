@@ -284,7 +284,7 @@ __DATA__
 
 @@ podviewer/perldoc.html.ep
 <div class="crumbs">
-    % my $path;
+    % my $path = '';
     % for my $part (split '/', $module) {
         %= '::' if $path
         % $path .= $path ? "/$part" : $path;
