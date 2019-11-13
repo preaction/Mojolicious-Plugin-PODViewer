@@ -1,5 +1,5 @@
 package Mojolicious::Plugin::PODViewer;
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 # ABSTRACT: POD renderer plugin
 
 =encoding utf8

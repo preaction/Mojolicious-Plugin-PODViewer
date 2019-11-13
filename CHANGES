@@ -2,6 +2,8 @@ Changelog for Mojolicious-Plugin-PODViewer
 
 {{ $NEXT }}
 
+0.005     2019-11-13 12:54:35-06:00 America/Chicago
+
     [Fixed]
 
     - Fixed title not containing all text from the POD. Thanks @Tekki!
