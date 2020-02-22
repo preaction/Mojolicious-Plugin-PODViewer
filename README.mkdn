@@ -7,7 +7,7 @@ Mojolicious::Plugin::PODViewer - POD renderer plugin
 
 # VERSION
 
-version 0.005
+version 0.006
 
 # SYNOPSIS
 
@@ -152,6 +152,7 @@ Register renderer and helper in [Mojolicious](https://metacpan.org/pod/Mojolicio
 
 - brad <brad@clickmagick.com>
 - CandyAngel <candyangel@electricjungle.org>
+- Luc Didry <luc@didry.org>
 - Oleg <verdrehung@gmail.com>
 - Tekki <tekki@tekki.ch>
 - Zoffix Znet <cpan@zoffix.com>
