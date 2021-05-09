@@ -2,6 +2,11 @@ Changelog for Mojolicious-Plugin-PODViewer
 
 {{ $NEXT }}
 
+  [Fixed]
+
+  - Fixed compatibility with Mojolicious 9.11+. Thanks @eserte for
+    reporting this issue! [Github #9]
+
 0.006     2020-02-21 22:10:51-06:00 America/Chicago
 
   [Fixed]
