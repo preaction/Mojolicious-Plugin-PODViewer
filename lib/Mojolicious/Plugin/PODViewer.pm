@@ -179,10 +179,13 @@ sub register {
       module => $default_module,
       ( $conf->{layout} ? ( layout => $conf->{layout} ) : () ),
       allow_modules => $conf->{allow_modules} // [ qr{} ],
+      format => undef,
   };
   my $route = $conf->{route} ||= $app->routes->any( '/perldoc' );
-  return $route->any( '/:module' =>
-      $defaults => [module => qr/[^.]+/] => \&_perldoc,
+  return $route->any( '/:module'
+    => $defaults
+    => [format => [qw( html txt )], module => qr/[^.]+/]
+    => \&_perldoc,
   )->name('plugin.podviewer');
 }
 
